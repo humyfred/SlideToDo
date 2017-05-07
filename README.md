@@ -1,5 +1,7 @@
 # SlideToDo
+可做向左滑动删除
 
+基于原生开发，可拓展为React、Vue的插件
 
 ## API
 ```html

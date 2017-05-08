@@ -11,8 +11,7 @@
         target: '.J_touch_service', // 列表单元类名
         action: function(rebind){
           // ...
-
-  		  rebind() // 如果action函数重新渲染列表组件，rebind函数能重新绑定元素
+          rebind() // 如果action函数重新渲染列表组件，rebind函数能重新绑定元素
         }
       })
    </script>

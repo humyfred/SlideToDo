@@ -4,6 +4,7 @@
 	  this.target = options.target
 	  this.action = options.action
 	  this.buttonWidth = options.buttonWidth || 70
+	  this.$decorateStyle = this.decorateStyle
 	  this.init()
 	}
 

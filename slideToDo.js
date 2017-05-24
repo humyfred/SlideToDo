@@ -1,4 +1,15 @@
 (function(){
+
+	window.requestAnimationFrame = window.requestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || function(f){return setTimeout(f, 1000/60)} // simulate calling code 60 
+ 
+	window.cancelAnimationFrame = window.cancelAnimationFrame
+    || window.mozCancelAnimationFrame
+    || function(requestID){clearTimeout(requestID)} //fall back
+
 	function SlideToDo(options){
 	  this.parent = document.querySelector(options.parent)
 	  this.target = options.target
@@ -27,6 +38,7 @@
 			}
 		},
 		touchStart: function(evt){
+
 			var targetElement = isChildOfSlide(evt.target)
 			if(!targetElement){
 				this.targetElement = null ; // 阻止touchend
@@ -37,8 +49,14 @@
 				return false;
 			}
 
-			var touch = evt.targetTouches[0];
 			this.targetElement = targetElement;
+
+			if(this.targetElement !== this.lastTargetElement && this.lastTargetElement){
+				this.scrollBackButtonSpecial(this.lastTargetElement, this.lastTargetElement.nextElementSibling)
+			}
+
+			var touch = evt.targetTouches[0];
+			
 			this.touchStartX = touch.pageX;
 			this.touchStartY = touch.pageY;
 			this.slideAction = this.targetElement.nextElementSibling;
@@ -77,8 +95,6 @@
 				return ;
 			}
 
-			var slideActionRight = Number(this.slideAction.style.right.replace(/px/g,''));
-
 			if(Math.abs(this.LastTargetLeft - this.targetElement.offsetLeft) <= 10){
 				this.targetElement.style.left = this.LastTargetLeft + 'px'
 				this.slideAction.style.right = this.LastSlideActionright + 'px'
@@ -87,24 +103,12 @@
 
 			this.stopAutoScroll = false // 取消停止setTimeout自动滚动
 
-			var self = this
-			if(this.LastTargetLeft < this.targetElement.offsetLeft){
+			this.lastTargetElement = this.targetElement;// 缓存
 
-				setTimeout(function(){
-					if(self.targetElement && self.targetElement.offsetLeft < 0 && !self.stopAutoScroll){
-						self.targetElement.style.left = ++self.targetElement.offsetLeft + 'px'
-						self.slideAction.style.right = (slideActionRight--) + 'px'
-						setTimeout(arguments.callee, 10)
-					}
-				},10)
+			if(this.LastTargetLeft < this.targetElement.offsetLeft){
+				this.scrollBackButton();
 			}else {
-				setTimeout(function(){
-					if(self.targetElement && self.targetElement.offsetLeft > -1 * self.buttonWidth && !self.stopAutoScroll){
-						self.targetElement.style.left = --self.targetElement.offsetLeft + 'px'
-						self.slideAction.style.right = (slideActionRight++) + 'px'
-						setTimeout(arguments.callee, 10)
-					}
-				},10)
+				this.scrollShowButton(this.targetElement, this.slideAction);
 			}
 		},
 		decorateStyle: function(target, parent){
@@ -114,10 +118,6 @@
 				var height = targets[i].offsetHeight
 				targets[i].outerHTML =  '<div style="position: relative;overflow: hidden;height:'+height+'px;"><div class="slideTarget" style="position: absolute;width: 100%;">' + targets[i].outerHTML + '</div>'  + SlideBtn + '</div>'
 			}
-			
-			// parent.style.position = 'relative'
-			// parent.style.overflow = 'hidden'
-			// fixParentLength(parent)
 		},
 		slideAction: function(evt) {
 			evt.stopImmediatePropagation()
@@ -125,6 +125,43 @@
 			if(className && className.indexOf('slideAction')>-1){
 				this.action.call(evt.target, this.decorateStyle.bind(this, this.target, this.parent))
 			}
+		},
+		scrollBackButton: function(){
+			var self = this
+			var slideActionRight = Number(this.slideAction.style.right.replace(/px/g,''));
+			this.animationId = requestAnimationFrame(function(){
+				cancelAnimationFrame(self.animationId)
+				if(self.targetElement && self.targetElement.offsetLeft <= 0 && !self.stopAutoScroll){
+					self.targetElement.style.left = ++self.targetElement.offsetLeft + 'px'
+					self.slideAction.style.right = (slideActionRight--) + 'px'
+					self.animationId = requestAnimationFrame(arguments.callee)
+				}
+			})
+		},
+		scrollShowButton: function(target, slideAction){
+			var self = this
+			var slideActionRight = Number(slideAction.style.right.replace(/px/g,''));
+			this.animationId = requestAnimationFrame(function(){
+				cancelAnimationFrame(self.animationId)
+
+				if(target && target.offsetLeft >= -1 * self.buttonWidth && !self.stopAutoScroll){
+					target.style.left = --target.offsetLeft + 'px'
+					slideAction.style.right = (slideActionRight++) + 'px'
+					self.animationId = requestAnimationFrame(arguments.callee)
+				}
+			})
+		},
+		scrollBackButtonSpecial: function(target, slideAction){
+			var self = this
+			this.timeoutSpeciId = requestAnimationFrame(function(){
+				cancelAnimationFrame(self.timeoutSpeciId)
+				var slideActionRight = Number(slideAction.style.right.replace(/px/g,''));
+				if(target && target.offsetLeft <= 0){
+					target.style.left = 3 + target.offsetLeft + 'px'
+					slideAction.style.right = (slideActionRight-3) + 'px'
+					self.timeoutSpeciId = requestAnimationFrame(arguments.callee)
+				}
+			})
 		}
 	}
 

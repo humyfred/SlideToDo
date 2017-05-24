@@ -3,6 +3,11 @@
 
 基于原生开发，可拓展为React、Vue的插件
 
+## 效果
+![11.gif](https://github.com/humyfred/SlideToDo/blob/master/screenshot/example.gif)
+
+效果链接：https://humyfred.github.io/SlideToDo/index.html
+
 ## API
 ```html
     <script>

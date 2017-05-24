@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>左侧滑动</title>
+
+  </head>
+  <style type="text/css">
+    *{
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    #J_serviceList{
+      padding: 24px 0;
+    }
+    .J_touch_service{
+      height: 47px;
+      line-height: 47px;
+    }
+    .J_touch_service:before{
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      border-bottom: 1px solid #cecbcb;
+      color: #cecbcb;
+      -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+      transform-origin: 0 0;
+      -webkit-transform: scaleY(0.5);
+      -ms-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+  </style>
+  <body>
+  <div id="J_serviceList">
+    <div class="J_touch_service">嘻嘻</div>
+    <div class="J_touch_service">哈哈</div>
+    <div class="J_touch_service">呵呵</div>
+    <div class="J_touch_service">呼呼</div>
+    <div class="J_touch_service">啦啦</div>
+  </div>
+   
+  </body>
+ <script type="text/javascript" src="../slideToDo.js"></script>
+ <script>
+    new SlideToDo({
+        parent: '#J_serviceList', // 列表组件Id
+        target: '.J_touch_service', // 列表单元类名
+        action: function(rebind){
+          // ...
+
+          rebind() // 如果action函数重新渲染列表组件，rebind函数能重新绑定元素
+        }
+      })
+  </script>
+</html>

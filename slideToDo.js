@@ -185,5 +185,13 @@
 				parent.style.height = height * parent.childElementCount + 'px'
 			}
 		}
-		window.SlideToDo = SlideToDo;
+
+		if(exports === 'object' && typeof module !== 'undefined')
+        module.exports = SlideToDo
+    if (typeof define === 'function' && define.amd)
+        define(function() { return SlideToDo })
+    else
+        window.SlideToDo = SlideToDo;
+      
+		
 })();
